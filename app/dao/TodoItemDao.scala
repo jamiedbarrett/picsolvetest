@@ -1,12 +1,14 @@
 package dao
 
 import anorm._
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import model.TodoItemData
 import play.api.db._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
+@ImplementedBy(classOf[TodoItemDaoImpl])
 trait TodoItemDao {
   def create(todoItemData: TodoItemData): Future[TodoItemData]
   def listAll: Future[List[TodoItemData]]
@@ -46,6 +48,6 @@ trait TodoItemSql {
   }
 
   def selectTodoItems = {
-    SQL(s"SELECT * FROM todoitem")
+    SQL("SELECT * FROM todoitem")
   }
 }

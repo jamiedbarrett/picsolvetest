@@ -1,7 +1,18 @@
-CREATE TABLE TODOITEM
-( "ID" BIGSERIAL PRIMARY KEY,
-	"PRIORITY" INT NOT NULL,
-  "DESCRIPTION" TEXT,
-  "ISDONE" BOOLEAN
+# Users schema
+
+# --- !Ups
+
+CREATE TABLE todoitem
+( ID          serial PRIMARY KEY,
+  PRIORITY    INTEGER NOT NULL,
+  DESCRIPTION TEXT,
+  ISDONE      BOOLEAN
 );
+
+# --- !Downs
+
+DROP TABLE todoitem;
+
+
+
 

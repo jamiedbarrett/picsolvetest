@@ -1,13 +1,21 @@
 package controllers
 
+import com.google.inject.Inject
 import model.TodoItemData
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import service.TodoItemService
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class Application extends Controller {
+case class TodoList(result: List[TodoItemData])
+
+class Application @Inject()(val todoItemService: TodoItemService) extends Controller {
+
+  implicit val todoListFormat =  Json.format[TodoList]
 
   //Just use a form for now
   val userForm = Form(
@@ -19,18 +27,23 @@ class Application extends Controller {
     )(TodoItemData.apply)(TodoItemData.unapply)
   )
 
-  def createTodoItem() = Action.async { request =>
+  def createTodoItem() = Action.async { implicit request =>
+    System.out.println("Yeah")
     userForm.bindFromRequest.fold(
       error => Future.successful(BadRequest),
-      formData => Future {
-        //Save to dao here
-        Created
-      }
+      formData =>
+       todoItemService.createTodoItem(formData).map { creationResult =>
+         creationResult.fold(
+           error => InternalServerError,
+           success => Created)
+       }
     )
   }
 
   def listAllTodoItems = Action.async {
-    Future{???}
+    todoItemService.listAllTodoItems.map { itemList =>
+      val todoList = TodoList(itemList.map(_.todoItemData))
+      Ok(Json.toJson(todoList))
+    }
   }
-
 }

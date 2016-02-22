@@ -2,6 +2,7 @@ package model
 
 import anorm.{~, RowParser}
 import anorm.SqlParser._
+import play.api.libs.json.Json
 
 
 trait TodoItem {
@@ -26,8 +27,7 @@ case class TodoItemData(id: Long, priority: Int, description: String, isDone: Bo
 
 object TodoItemData {
 
-  def apply(priority: Int, description: String) =
-    TodoItemData(0l, priority, description, isDone = false)
+  implicit val todoItemFormat =  Json.format[TodoItemData]
 
   val parser: RowParser[TodoItemData] = {
       get[Long]("id") ~
